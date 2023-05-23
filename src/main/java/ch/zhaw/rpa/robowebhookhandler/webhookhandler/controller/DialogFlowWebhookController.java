@@ -59,8 +59,8 @@ public class DialogFlowWebhookController {
 
         //ANPASSEN!!!!
         // Je nach Intent anderen Handler aufrufen oder Response zusammenbauen
-        if (intent.equals("vorinformationen.sammeln")) {
-            // Bild via UiPath erhalten
+        if (intent.equals("rechnungsdetails.abrufen")) {
+            // Antwort vom RPA-Bot erhalten
             msg = uiPathHandler.handleUiPathRequest(request, intent, msg);
         }  else {
             // Response no handler found zusammenstellen

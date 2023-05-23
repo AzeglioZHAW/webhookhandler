@@ -14,12 +14,13 @@ public class UiPathAsyncJobHandler {
     private UiPathOrchestratorRestClient client;
     
     @Async
-    public void asyncRunUiPathRoboConnector(DialogFlowSessionState sessionState, String rechnungsNummer) {
+    public void asyncRunUiPathRoboConnector(DialogFlowSessionState sessionState, String rechnungsnummer) {
         System.out.println("!!!!!!!!! Release Key angefordert von UiPath");
         String releaseKey = client.getReleaseKeyByProcessKey("DurchstichRPA");
 
+        //hier wird die Rechnungsnummer and RPA-Bot übergeben, in_InvoiceNr
         JSONObject inputArguments = new JSONObject();
-        inputArguments.put("rasse", rechnungsNummer);
+        inputArguments.put("in_InvoiceNr", rechnungsnummer);
 
         System.out.println("!!!!!!!!! Auftrag für Job starten erteilt");
         Integer id = client.startJobAndGetId(releaseKey, inputArguments);
@@ -32,15 +33,17 @@ public class UiPathAsyncJobHandler {
             sessionState.setUiPathJobState("created");
             JSONObject outputArguments = client.getJobById(id, 1000, 60);
             
-            if(outputArguments == null || !outputArguments.getString("out_exceptionDescription").isEmpty()) {
+            if(outputArguments == null || !outputArguments.getString("Out_InvoiceError").isEmpty()) {
                 System.out.println("!!!!!!!!! Job fehlgeschlagen");
                 sessionState.setUiPathJobState("failed");
-                sessionState.setUiPathExceptionMessage(outputArguments == null ? "Der Job ist fehlgeschlagen" : outputArguments.getString("out_exceptionDescription"));
+                sessionState.setUiPathExceptionMessage(outputArguments == null ? "Der Job ist fehlgeschlagen" : outputArguments.getString("Out_InvoiceError"));
             } else {
                 System.out.println("!!!!!!!!! Job erfolgreich durchgeführt");
                 sessionState.setUiPathJobState("successfull");
                 sessionState.setOutputArguments(outputArguments);
+                System.out.println(outputArguments.getString("out_InvoiceInformation"));
             }
+
         }
     }
 }
