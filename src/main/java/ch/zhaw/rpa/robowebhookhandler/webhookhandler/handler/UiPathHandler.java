@@ -26,6 +26,7 @@ public class UiPathHandler {
 
     public GoogleCloudDialogflowV2IntentMessage handleUiPathRequest(GoogleCloudDialogflowV2WebhookRequest request,
             String intent, GoogleCloudDialogflowV2IntentMessage msg) {
+                //ANPASSEN!!!!
                 return msg;
     }
 }

@@ -57,6 +57,7 @@ public class DialogFlowWebhookController {
         // Intent auslesen
         String intent = queryResult.getIntent().getDisplayName();
 
+        //ANPASSEN!!!!
         // Je nach Intent anderen Handler aufrufen oder Response zusammenbauen
         if (intent.equals("vorinformationen.sammeln")) {
             // Bild via UiPath erhalten
