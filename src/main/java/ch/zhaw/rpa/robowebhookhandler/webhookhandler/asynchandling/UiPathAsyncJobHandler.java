@@ -33,10 +33,10 @@ public class UiPathAsyncJobHandler {
             sessionState.setUiPathJobState("created");
             JSONObject outputArguments = client.getJobById(id, 1000, 60);
             
-            if(outputArguments == null || !outputArguments.getString("Out_InvoiceError").isEmpty()) {
+            if(outputArguments == null || !outputArguments.getString("out_InvoiceError").isEmpty()) {
                 System.out.println("!!!!!!!!! Job fehlgeschlagen");
                 sessionState.setUiPathJobState("failed");
-                sessionState.setUiPathExceptionMessage(outputArguments == null ? "Der Job ist fehlgeschlagen" : outputArguments.getString("Out_InvoiceError"));
+                sessionState.setUiPathExceptionMessage(outputArguments == null ? "Der Job ist fehlgeschlagen" : outputArguments.getString("out_InvoiceError"));
             } else {
                 System.out.println("!!!!!!!!! Job erfolgreich durchgeführt");
                 sessionState.setUiPathJobState("successfull");

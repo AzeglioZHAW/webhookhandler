@@ -78,11 +78,10 @@ public class UiPathHandler {
                                                 || intent.equals("ContinueGetRechnungsdetailsIntent")) {
                                         String OutRechnungsDetails = sessionState.getOutputArguments()
                                                         .getString("out_InvoiceInformation");
-
+                                        System.out.println(OutRechnungsDetails);
                                         GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
                                         text.setText(List.of("Die Rechnungsdetails sind: " + OutRechnungsDetails));
                                         msg.setText(text);
-                                        System.out.println(OutRechnungsDetails);
 
                                 }
 
@@ -102,7 +101,7 @@ public class UiPathHandler {
 
                 }
 
-                System.out.println("UiPathHandler Return msg: "+ msg);
+                System.out.println("UiPathHandler Return msg: " + msg);
                 return msg;
         }
 
