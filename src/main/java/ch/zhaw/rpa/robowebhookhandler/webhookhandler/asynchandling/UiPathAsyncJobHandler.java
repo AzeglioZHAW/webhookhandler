@@ -41,7 +41,7 @@ public class UiPathAsyncJobHandler {
                 System.out.println("!!!!!!!!! Job erfolgreich durchgeführt");
                 sessionState.setUiPathJobState("successfull");
                 sessionState.setOutputArguments(outputArguments);
-                System.out.println(outputArguments.getString("out_InvoiceInformation"));
+                System.out.println("UiPathAsynchJobHandler Message: " + outputArguments.getString("out_InvoiceInformation"));
             }
 
         }
