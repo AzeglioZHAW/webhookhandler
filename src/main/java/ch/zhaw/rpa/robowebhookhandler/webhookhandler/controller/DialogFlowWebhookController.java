@@ -40,7 +40,7 @@ public class DialogFlowWebhookController {
 
     @PostMapping(value = "/dialogflow-main-handler", produces = { MediaType.APPLICATION_JSON_VALUE })
     public String webhook(@RequestBody String rawData) throws IOException {
-        // Response instanzieren
+    /*    // Response instanzieren
         GoogleCloudDialogflowV2WebhookResponse response = new GoogleCloudDialogflowV2WebhookResponse();
 
         // Antwort-Message instanzieren
@@ -82,5 +82,7 @@ public class DialogFlowWebhookController {
         jsonGenerator.serialize(response);
         jsonGenerator.flush();
         return stringWriter.toString();
+    */
+    return "{\"fulfillmentMessages\":[{\"card\":{\"title\":\"cardtitle\",\"subtitle\":\"cardtext\",\"imageUri\":\"https://example.com/images/example.png\",\"buttons\":[{\"text\":\"buttontext\",\"postback\":\"https://example.com/path/for/end-user/to/follow\"}]}}]}";
     }
 }
