@@ -37,71 +37,72 @@ public class UiPathHandler {
                 // Prüfen, ob Session Id bereits verwaltet ist
                 DialogFlowSessionState sessionState = stateService.getSessionStateBySessionId(sessionId);
 
-                // Wenn die Session Id noch nicht verwaltet ist (erster Request)
-                if (sessionState == null) {
-                        // Neuen Session State erstellen
-                        sessionState = DialogFlowSessionState.builder().DialogFlowSessionId(sessionId)
-                                        .DialogFlowFirstRequestReceived(new Date()).uiPathExceptionMessage("").build();
+                while(sessionState == null || (!sessionState.getUiPathJobState().equals("successfull") && !sessionState.getUiPathJobState().equals("failed"))) {
+                        // Wenn die Session Id noch nicht verwaltet ist (erster Request)
+                        if (sessionState == null) {
+                                // Neuen Session State erstellen
+                                sessionState = DialogFlowSessionState.builder().DialogFlowSessionId(sessionId)
+                                                .DialogFlowFirstRequestReceived(new Date()).uiPathExceptionMessage("").build();
 
-                        stateService.addSessionState(sessionState);
+                                stateService.addSessionState(sessionState);
 
-                        // Async den Auftrag für den UiPath-Job erteilen
-                        uiPathAsyncJobHandler.asyncRunUiPathRoboConnector(sessionState, rechnungsnummer);
-                        Thread.sleep(6000);
-                        System.out.println("!!!!!!!!! AsyncHandler aufgerufen für Session Id " + sessionId);
+                                // Async den Auftrag für den UiPath-Job erteilen
+                                uiPathAsyncJobHandler.asyncRunUiPathRoboConnector(sessionState, rechnungsnummer);
+                                Thread.sleep(6000);
+                                System.out.println("!!!!!!!!! AsyncHandler aufgerufen für Session Id " + sessionId);
 
-                        // Etwas Zeit "schinden", aber so, dass DialogFlow noch nicht abbricht und
-                        // Text für Benutzer festlegen
-                        msg = getResponseOfTypePleaseWait(
-                                        "Es kann eine Minute dauern, bis die Informationen von der Originalquelle abgerufen werden. Klicken Sie auf 'Weiter', sobald Sie sehen möchten, ob die Informationen bereits vorhanden sind.",
-                                        request, intent, msg);
-                }
-
-                // Wenn ein zweiter, dritter, usw. Request vorhanden ist
-                else {
-                        // Wenn der UiPath Job noch am laufen ist
-                        if (sessionState.getUiPathJobState().equals("created")) {
-                                // Etwas Zeit "schinten", aber so, dass Google Actions noch nicht abbricht und
+                                // Etwas Zeit "schinden", aber so, dass DialogFlow noch nicht abbricht und
                                 // Text für Benutzer festlegen
                                 msg = getResponseOfTypePleaseWait(
-                                                "Ich erhalte immer noch die von Ihnen gewünschten Informationen. Klicken Sie auf 'Weiter', wenn Sie die Umfrage wiederholen möchten.",
+                                                "Es kann eine Minute dauern, bis die Informationen von der Originalquelle abgerufen werden. Klicken Sie auf 'Weiter', sobald Sie sehen möchten, ob die Informationen bereits vorhanden sind.",
                                                 request, intent, msg);
                         }
-                        // Wenn der UiPath Job abgeschlossen wurde
-                        else if (sessionState.getUiPathJobState().equals("successfull")) {
-                                /*
-                                 * String dogDetailsUri = sessionState.getOutputArguments()
-                                 * .getString("out_uriDetailsPage");
-                                 */
 
-                                // Wenn die Rechnungsdetails angefragt wurden
-                                if (intent.equals("rechnungsdetails.abrufen")
-                                                || intent.equals("ContinueGetRechnungsdetailsIntent")) {
-                                        String OutRechnungsDetails = sessionState.getOutputArguments()
-                                                        .getString("out_InvoiceInformation");
-                                        System.out.println(OutRechnungsDetails);
+                        // Wenn ein zweiter, dritter, usw. Request vorhanden ist
+                        else {
+                                // Wenn der UiPath Job noch am laufen ist
+                                if (sessionState.getUiPathJobState().equals("created")) {
+                                        // Etwas Zeit "schinten", aber so, dass Google Actions noch nicht abbricht und
+                                        // Text für Benutzer festlegen
+                                        msg = getResponseOfTypePleaseWait(
+                                                        "Ich erhalte immer noch die von Ihnen gewünschten Informationen. Klicken Sie auf 'Weiter', wenn Sie die Umfrage wiederholen möchten.",
+                                                        request, intent, msg);
+                                }
+                                // Wenn der UiPath Job abgeschlossen wurde
+                                else if (sessionState.getUiPathJobState().equals("successfull")) {
+                                        /*
+                                        * String dogDetailsUri = sessionState.getOutputArguments()
+                                        * .getString("out_uriDetailsPage");
+                                        */
+
+                                        // Wenn die Rechnungsdetails angefragt wurden
+                                        if (intent.equals("rechnungsdetails.abrufen")
+                                                        || intent.equals("ContinueGetRechnungsdetailsIntent")) {
+                                                String OutRechnungsDetails = sessionState.getOutputArguments()
+                                                                .getString("out_InvoiceInformation");
+                                                System.out.println(OutRechnungsDetails);
+                                                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+                                                text.setText(List.of("Die Rechnungsdetails sind: " + OutRechnungsDetails));
+                                                msg.setText(text);
+
+                                        }
+
+                                        stateService.removeSessionState(sessionState);
+                                }
+                                // In allen anderen Fällen (UiPath Job nicht erstellt werden konnte oder
+                                // fehlgeschlagen)
+                                else {
                                         GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-                                        text.setText(List.of("Die Rechnungsdetails sind: " + OutRechnungsDetails));
+                                        text.setText(List.of((sessionState.getUiPathExceptionMessage().isEmpty()
+                                                        ? "An unexpected error occured."
+                                                        : "The following error occured: "
+                                                                        + sessionState.getUiPathExceptionMessage())));
                                         msg.setText(text);
-
+                                        stateService.removeSessionState(sessionState);
                                 }
 
-                                stateService.removeSessionState(sessionState);
                         }
-                        // In allen anderen Fällen (UiPath Job nicht erstellt werden konnte oder
-                        // fehlgeschlagen)
-                        else {
-                                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-                                text.setText(List.of((sessionState.getUiPathExceptionMessage().isEmpty()
-                                                ? "An unexpected error occured."
-                                                : "The following error occured: "
-                                                                + sessionState.getUiPathExceptionMessage())));
-                                msg.setText(text);
-                                stateService.removeSessionState(sessionState);
-                        }
-
                 }
-
                 System.out.println("UiPathHandler msg: " + msg);
                 return msg;
         }
