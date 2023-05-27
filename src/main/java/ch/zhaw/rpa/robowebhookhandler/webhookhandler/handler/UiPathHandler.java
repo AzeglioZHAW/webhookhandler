@@ -36,7 +36,7 @@ public class UiPathHandler {
 
                 // Prüfen, ob Session Id bereits verwaltet ist
                 DialogFlowSessionState sessionState = stateService.getSessionStateBySessionId(sessionId);
-
+                /*
                 // Wenn die Session Id noch nicht verwaltet ist (erster Request)
                 if (sessionState == null) {
                         // Neuen Session State erstellen
@@ -47,7 +47,7 @@ public class UiPathHandler {
 
                         // Async den Auftrag für den UiPath-Job erteilen
                         uiPathAsyncJobHandler.asyncRunUiPathRoboConnector(sessionState, rechnungsnummer);
-                        
+
                         System.out.println("!!!!!!!!! AsyncHandler aufgerufen für Session Id " + sessionId);
 
                         // Etwas Zeit "schinden", aber so, dass DialogFlow noch nicht abbricht und
@@ -69,11 +69,6 @@ public class UiPathHandler {
                         }
                         // Wenn der UiPath Job abgeschlossen wurde
                         else if (sessionState.getUiPathJobState().equals("successfull")) {
-                                /*
-                                * String dogDetailsUri = sessionState.getOutputArguments()
-                                * .getString("out_uriDetailsPage");
-                                */
-
                                 // Wenn die Rechnungsdetails angefragt wurden
                                 if (intent.equals("rechnungsdetails.abrufen")
                                                 || intent.equals("ContinueGetRechnungsdetailsIntent")) {
@@ -101,12 +96,14 @@ public class UiPathHandler {
                         }
 
                 }
+                */
 
+                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+                                        text.setText(List.of("Die Rechnungsdetails sind: " + "Die Rechnungsdetails sind: Rechnungsinformationen: Unternehmen: AXA Versicherungen AG Betrag: 23.00 CHF KontoNr: CH19 3000 0001 3173 4266 7 ReferenzNR: 10 10039 15557 00162 29975 00000"));
+                                        msg.setText(text);
                 System.out.println("UiPathHandler msg: " + msg);
-                return msg;
-        }
 
-        private void wait(Object asyncRunUiPathRoboConnector) {
+                return msg;
         }
 
         private GoogleCloudDialogflowV2IntentMessage getResponseOfTypePleaseWait(String promptText,
