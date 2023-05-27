@@ -25,7 +25,7 @@ public class UiPathHandler {
         private DialogFlowSessionStateService stateService;
 
         public GoogleCloudDialogflowV2IntentMessage handleUiPathRequest(GoogleCloudDialogflowV2WebhookRequest request,
-                        String intent, GoogleCloudDialogflowV2IntentMessage msg) {
+                        String intent, GoogleCloudDialogflowV2IntentMessage msg) throws InterruptedException {
                 // ANPASSEN!!!!
                 // Rechnungsnummer auslesen
                 String rechnungsnummer = request.getQueryResult().getParameters().get("rechnung")
@@ -47,6 +47,7 @@ public class UiPathHandler {
 
                         // Async den Auftrag für den UiPath-Job erteilen
                         uiPathAsyncJobHandler.asyncRunUiPathRoboConnector(sessionState, rechnungsnummer);
+                        Thread.sleep(6000);
                         System.out.println("!!!!!!!!! AsyncHandler aufgerufen für Session Id " + sessionId);
 
                         // Etwas Zeit "schinden", aber so, dass DialogFlow noch nicht abbricht und
@@ -101,8 +102,11 @@ public class UiPathHandler {
 
                 }
 
-                System.out.println("UiPathHandler Return msg: " + msg);
+                System.out.println("UiPathHandler msg: " + msg);
                 return msg;
+        }
+
+        private void wait(Object asyncRunUiPathRoboConnector) {
         }
 
         private GoogleCloudDialogflowV2IntentMessage getResponseOfTypePleaseWait(String promptText,

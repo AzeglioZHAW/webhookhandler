@@ -61,7 +61,12 @@ public class DialogFlowWebhookController {
         // Je nach Intent anderen Handler aufrufen oder Response zusammenbauen
         if (intent.equals("rechnungsdetails.abrufen")|| intent.equals("ContinueGetRechnungsdetailsIntent")) {
             // Antwort vom RPA-Bot erhalten
-            msg = uiPathHandler.handleUiPathRequest(request, intent, msg);
+            try {
+                msg = uiPathHandler.handleUiPathRequest(request, intent, msg);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }  else {
             // Response no handler found zusammenstellen
             GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
