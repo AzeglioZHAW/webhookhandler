@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessage;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessageCard;
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessageCardButton;
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessageText;
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2WebhookRequest;
 
@@ -28,15 +30,16 @@ public class UiPathHandler {
                         String intent, GoogleCloudDialogflowV2IntentMessage msg) throws InterruptedException {
                 // ANPASSEN!!!!
                 // Rechnungsnummer auslesen
-                String rechnungsnummer = request.getQueryResult().getParameters().get("Rechnungsnummer")
-                                .toString();
+                Object rechnungsnummerObject = request.getQueryResult().getParameters().get("Rechnungsnummer");
+                String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
+
                 System.out.println(rechnungsnummer);
                 // Session Id auslesen
                 String sessionId = request.getSession();
 
                 // Prüfen, ob Session Id bereits verwaltet ist
                 DialogFlowSessionState sessionState = stateService.getSessionStateBySessionId(sessionId);
-                /*
+                
                 // Wenn die Session Id noch nicht verwaltet ist (erster Request)
                 if (sessionState == null) {
                         // Neuen Session State erstellen
@@ -48,59 +51,60 @@ public class UiPathHandler {
                         // Async den Auftrag für den UiPath-Job erteilen
                         uiPathAsyncJobHandler.asyncRunUiPathRoboConnector(sessionState, rechnungsnummer);
 
-                        System.out.println("!!!!!!!!! AsyncHandler aufgerufen für Session Id " + sessionId);
-
+                        try {
+                                Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                                System.out.println("Der folgende Fehler ist aufgetreten: " + e.getLocalizedMessage()
+                                                 + "Klicken Sie auf 'Weiter', wenn Sie es erneut versuchen möchten.");
+                        }
+                        
                         // Etwas Zeit "schinden", aber so, dass DialogFlow noch nicht abbricht und
-                        // Text für Benutzer festlegen
-                        msg = getResponseOfTypePleaseWait(
-                                        "Es kann eine Minute dauern, bis die Informationen von der Originalquelle abgerufen werden. Klicken Sie auf 'Weiter', sobald Sie sehen möchten, ob die Informationen bereits vorhanden sind.",
-                                        request, intent, msg);
+                        if (sessionState.getUiPathJobState().equals("created")) {
+                                // Text für Benutzer festlegen
+                                msg = getResponseOfTypePleaseWait(
+                                                "Es kann eine Minute dauern, bis die Informationen von der Originalquelle abgerufen werden. Klicken Sie auf 'Weiter', sobald Sie sehen möchten, ob die Informationen bereits vorhanden sind.",
+                                                request, intent, msg);
+                                // Damit er der Text direkt zum User kommt, die unteren Zeilen sind erst später relevant
+                                return msg;
+                        }
                 }
 
                 // Wenn ein zweiter, dritter, usw. Request vorhanden ist
-                else {
-                        // Wenn der UiPath Job noch am laufen ist
-                        if (sessionState.getUiPathJobState().equals("created")) {
-                                // Etwas Zeit "schinten", aber so, dass Google Actions noch nicht abbricht und
-                                // Text für Benutzer festlegen
-                                msg = getResponseOfTypePleaseWait(
-                                                "Ich erhalte immer noch die von Ihnen gewünschten Informationen. Klicken Sie auf 'Weiter', wenn Sie die Umfrage wiederholen möchten.",
-                                                request, intent, msg);
-                        }
-                        // Wenn der UiPath Job abgeschlossen wurde
-                        else if (sessionState.getUiPathJobState().equals("successfull")) {
-                                // Wenn die Rechnungsdetails angefragt wurden
-                                if (intent.equals("rechnungsdetails.abrufen")
-                                                || intent.equals("ContinueGetRechnungsdetailsIntent")) {
-                                        String OutRechnungsDetails = sessionState.getOutputArguments()
-                                                        .getString("out_InvoiceInformation");
-                                        System.out.println(OutRechnungsDetails);
-                                        GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-                                        text.setText(List.of("Die Rechnungsdetails sind: " + OutRechnungsDetails));
-                                        msg.setText(text);
-
-                                }
-
-                                stateService.removeSessionState(sessionState);
-                        }
-                        // In allen anderen Fällen (UiPath Job nicht erstellt werden konnte oder
-                        // fehlgeschlagen)
-                        else {
-                                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-                                text.setText(List.of((sessionState.getUiPathExceptionMessage().isEmpty()
-                                                ? "An unexpected error occured."
-                                                : "The following error occured: "
-                                                                + sessionState.getUiPathExceptionMessage())));
-                                msg.setText(text);
-                                stateService.removeSessionState(sessionState);
-                        }
-
+                // Wenn der UiPath Job noch am laufen ist
+                if (sessionState.getUiPathJobState().equals("created")) {
+                        // Etwas Zeit "schinten", aber so, dass Google Actions noch nicht abbricht und
+                        // Text für Benutzer festlegen
+                        msg = getResponseOfTypePleaseWait(
+                                        "Ich erhalte immer noch die von Ihnen gewünschten Informationen. Klicken Sie auf 'Weiter', wenn Sie die Umfrage wiederholen möchten.",
+                                        request, intent, msg);
                 }
-                */
+                // Wenn der UiPath Job abgeschlossen wurde
+                else if (sessionState.getUiPathJobState().equals("successfull")) {
+                        // Wenn die Rechnungsdetails angefragt wurden
+                        if (intent.equals("rechnungsdetails.abrufen")
+                                        || intent.equals("ContinueGetRechnungsdetailsIntent")) {
+                                String OutRechnungsDetails = sessionState.getOutputArguments()
+                                                .getString("out_InvoiceInformation");
+                                System.out.println(OutRechnungsDetails);
+                                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+                                text.setText(List.of("Die Rechnungsdetails sind: " + OutRechnungsDetails));
+                                msg.setText(text);
 
-                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-                                        text.setText(List.of("Die Rechnungsdetails sind: " + "Die Rechnungsdetails sind: Rechnungsinformationen: Unternehmen: AXA Versicherungen AG Betrag: 23.00 CHF KontoNr: CH19 3000 0001 3173 4266 7 ReferenzNR: 10 10039 15557 00162 29975 00000"));
-                                        msg.setText(text);
+                        }
+                        stateService.removeSessionState(sessionState);
+                }
+                // In allen anderen Fällen (UiPath Job nicht erstellt werden konnte oder
+                // fehlgeschlagen)
+                else {
+                        GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+                        text.setText(List.of((sessionState.getUiPathExceptionMessage().isEmpty()
+                                        ? "An unexpected error occured."
+                                        : "The following error occured: "
+                                                        + sessionState.getUiPathExceptionMessage())));
+                        msg.setText(text);
+                        stateService.removeSessionState(sessionState);
+                }
+
                 System.out.println("UiPathHandler msg: " + msg);
 
                 return msg;
@@ -109,51 +113,23 @@ public class UiPathHandler {
         private GoogleCloudDialogflowV2IntentMessage getResponseOfTypePleaseWait(String promptText,
                         GoogleCloudDialogflowV2WebhookRequest request,
                         String intent, GoogleCloudDialogflowV2IntentMessage msg) {
-                try {
-                        Thread.sleep(4000);
-                } catch (InterruptedException e) {
-                        promptText = "Der folgende Fehler ist aufgetreten: " + e.getLocalizedMessage()
-                                        + "Klicken Sie auf 'Weiter', wenn Sie es erneut versuchen möchten.";
-                }
-
                 // Rich-Content-Payload in Form von verschachtelten HashMaps aufbereiten
                 // basierend auf
                 // https://cloud.google.com/dialogflow/es/docs/integrations/dialogflow-messenger?hl=en#rich
-                String textArray[] = new String[] { promptText };
+                String postpack = intent.equals("ContinueGetRechnungsdetailsIntent")
+                                || intent.equals("rechnungsdetails.abrufen")
+                                ? "ContinueGetRechnungsDetailsEvent"
+                                : "";
 
-                Map<String, Object> descriptionMap = new HashMap<>();
-                descriptionMap.put("type", "description");
-                descriptionMap.put("title", "Bitte warten ...");
-                descriptionMap.put("text", textArray);
+                GoogleCloudDialogflowV2IntentMessageCard card = new GoogleCloudDialogflowV2IntentMessageCard();
+                GoogleCloudDialogflowV2IntentMessageCardButton cardButton = new GoogleCloudDialogflowV2IntentMessageCardButton();
+                cardButton.setText("Weiter");
+                cardButton.setPostback(postpack);
+                card.setButtons(List.of(cardButton));
+                card.setTitle("Bitte warten...");
+                card.setSubtitle(promptText);
 
-                Map<String, Object> parametersMap = new HashMap<>();
-
-                Map<String, Object> eventMap = new HashMap<>();
-                eventMap.put("name",
-                                (intent.equals("ContinueGetRechnungsdetailsIntent")
-                                                || intent.equals("rechnungsdetails.abrufen")
-                                                                ? "ContinueGetRechnungsDetailsEvent"
-                                                                : ""));
-                eventMap.put("languageCode", "de");
-                eventMap.put("parameters", parametersMap);
-
-                Map<String, Object> iconMap = new HashMap<>();
-                iconMap.put("type", "chevron_right");
-                iconMap.put("color", "#FF9800");
-
-                Map<String, Object> linkMap = new HashMap<>();
-                linkMap.put("type", "button");
-                linkMap.put("text", "Weiter");
-                linkMap.put("event", eventMap);
-                linkMap.put("icon", iconMap);
-
-                Object richContentInnerArray[] = new Object[] { descriptionMap, linkMap };
-
-                Object richContentOuterArray[] = new Object[] { richContentInnerArray };
-
-                Map<String, Object> richContentMap = new HashMap<>();
-                richContentMap.put("richContent", richContentOuterArray);
-                msg.setPayload(richContentMap);
+                msg.setCard(card);
 
                 return msg;
         }
