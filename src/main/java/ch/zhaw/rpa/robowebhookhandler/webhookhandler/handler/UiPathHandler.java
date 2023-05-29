@@ -28,7 +28,7 @@ public class UiPathHandler {
                         String intent, GoogleCloudDialogflowV2IntentMessage msg) throws InterruptedException {
                 // ANPASSEN!!!!
                 // Rechnungsnummer auslesen
-                String rechnungsnummer = request.getQueryResult().getParameters().get("rechnung")
+                String rechnungsnummer = request.getQueryResult().getParameters().get("Rechnungsnummer")
                                 .toString();
                 System.out.println(rechnungsnummer);
                 // Session Id auslesen
