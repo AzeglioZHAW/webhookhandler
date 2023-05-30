@@ -116,15 +116,11 @@ public class UiPathHandler {
                 // Rich-Content-Payload in Form von verschachtelten HashMaps aufbereiten
                 // basierend auf
                 // https://cloud.google.com/dialogflow/es/docs/integrations/dialogflow-messenger?hl=en#rich
-                String postpack = intent.equals("ContinueGetRechnungsdetailsIntent")
-                                || intent.equals("rechnungsdetails.abrufen")
-                                ? "ContinueGetRechnungsDetailsEvent"
-                                : "";
 
                 GoogleCloudDialogflowV2IntentMessageCard card = new GoogleCloudDialogflowV2IntentMessageCard();
                 GoogleCloudDialogflowV2IntentMessageCardButton cardButton = new GoogleCloudDialogflowV2IntentMessageCardButton();
                 cardButton.setText("Weiter");
-                cardButton.setPostback(postpack);
+                cardButton.setPostback("Weiter");
                 card.setButtons(List.of(cardButton));
                 card.setTitle("Bitte warten...");
                 card.setSubtitle(promptText);
