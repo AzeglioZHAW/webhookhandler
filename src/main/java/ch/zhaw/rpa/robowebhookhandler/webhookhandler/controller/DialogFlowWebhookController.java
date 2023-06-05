@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Webhoo
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2WebhookResponse;
 
 import ch.zhaw.rpa.robowebhookhandler.webhookhandler.handler.UiPathHandler;
+import ch.zhaw.rpa.robowebhookhandler.webhookhandler.restclients.UiPathOrchestratorRestClient;
 
 @RestController
 @RequestMapping(value = "api")
@@ -31,6 +33,9 @@ public class DialogFlowWebhookController {
 
     @Autowired
     private UiPathHandler uiPathHandler;
+
+    @Autowired
+    private UiPathOrchestratorRestClient client;
 
     @GetMapping(value = "/test")
     public String testApi() {
@@ -59,10 +64,15 @@ public class DialogFlowWebhookController {
 
         //ANPASSEN!!!!
         // Je nach Intent anderen Handler aufrufen oder Response zusammenbauen
-        if (intent.equals("rechnungsdetails.abrufen")|| intent.equals("ContinueGetRechnungsdetailsIntent")) {
+        if (intent.equals("rechnungsdetails.abrufen")|| intent.equals("ContinueGetRechnungsdetailsIntent") || intent.equals("rechnungen.genehmigen")) {
             // Antwort vom RPA-Bot erhalten
             try {
-                msg = uiPathHandler.handleUiPathRequest(request, intent, msg);
+                Object rechnungsnummerObject = request.getQueryResult().getParameters().get("Rechnungsnummer");
+                String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
+                JSONObject inputArguments = new JSONObject();
+                inputArguments.put("in_InvoiceNr", rechnungsnummer);
+                String releaseKey = client.getReleaseKeyByProcessKey("DurchstichRPA");
+                msg = uiPathHandler.handleUiPathRequest(request, intent, msg, inputArguments, releaseKey);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

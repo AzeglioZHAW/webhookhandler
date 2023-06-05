@@ -14,13 +14,12 @@ public class UiPathAsyncJobHandler {
     private UiPathOrchestratorRestClient client;
     
     @Async
-    public void asyncRunUiPathRoboConnector(DialogFlowSessionState sessionState, String rechnungsnummer) {
+    public void asyncRunUiPathRoboConnector(DialogFlowSessionState sessionState, JSONObject inputArguments, String releaseKey) {
         System.out.println("!!!!!!!!! Release Key angefordert von UiPath");
-        String releaseKey = client.getReleaseKeyByProcessKey("DurchstichRPA");
-
+        //String releaseKey = client.getReleaseKeyByProcessKey("DurchstichRPA");
+        
         //hier wird die Rechnungsnummer and RPA-Bot übergeben, in_InvoiceNr
-        JSONObject inputArguments = new JSONObject();
-        inputArguments.put("in_InvoiceNr", rechnungsnummer);
+        
 
         System.out.println("!!!!!!!!! Auftrag für Job starten erteilt");
         Integer id = client.startJobAndGetId(releaseKey, inputArguments);

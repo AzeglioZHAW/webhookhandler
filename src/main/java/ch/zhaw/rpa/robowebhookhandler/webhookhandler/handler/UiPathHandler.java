@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,13 +28,15 @@ public class UiPathHandler {
         private DialogFlowSessionStateService stateService;
 
         public GoogleCloudDialogflowV2IntentMessage handleUiPathRequest(GoogleCloudDialogflowV2WebhookRequest request,
-                        String intent, GoogleCloudDialogflowV2IntentMessage msg) throws InterruptedException {
+                        String intent, GoogleCloudDialogflowV2IntentMessage msg, JSONObject inputArguments, String releaseKey) throws InterruptedException {
                 // ANPASSEN!!!!
                 // Rechnungsnummer auslesen
-                Object rechnungsnummerObject = request.getQueryResult().getParameters().get("Rechnungsnummer");
-                String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
 
-                System.out.println("UiPathHandler: Rechnungsnummer In: "+rechnungsnummer);
+                //Object genehmiggtObject = request.getQueryResult().getParameters().get("genehmigung");
+                //String istGenehmigt = genehmiggtObject != null ? genehmiggtObject.toString() : "";
+                //System.out.println("GenehmigungHandler: Rechnungsnummer In: ");
+                //System.out.println("GenehmigungHandler: istGenehmigt In: "+istGenehmigt);
+
                 // Session Id auslesen
                 String sessionId = request.getSession();
 
@@ -49,7 +52,7 @@ public class UiPathHandler {
                         stateService.addSessionState(sessionState);
 
                         // Async den Auftrag für den UiPath-Job erteilen
-                        uiPathAsyncJobHandler.asyncRunUiPathRoboConnector(sessionState, rechnungsnummer);
+                        uiPathAsyncJobHandler.asyncRunUiPathRoboConnector(sessionState, inputArguments, releaseKey);
 
                         try {
                                 Thread.sleep(3000);
@@ -97,6 +100,14 @@ public class UiPathHandler {
                                 msg.setText(text);
 
                         }
+                        /*else if(intent.equals("rechnungen.genehmigen")) {
+                                String OutRechnungsDetails = sessionState.getOutputArguments()
+                                                .getString("");
+                                System.out.println(OutRechnungsDetails);
+                                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+                                text.setText(List.of(""));
+                                msg.setText(text);
+                        }*/
                         stateService.removeSessionState(sessionState);
                 }
                 // In allen anderen Fällen (UiPath Job nicht erstellt werden konnte oder
