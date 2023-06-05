@@ -78,15 +78,12 @@ public class DialogFlowWebhookController {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        } else if(intent.equals("rechnungen.genehmigen")) {
+        } else if(intent.equals("rechnungen.genehmigen - yes")) {
             try {
-                Object rechnungsnummerObject = request.getQueryResult().getParameters().get("Rechnungsnummer");
+                Object rechnungsnummerObject = request.getQueryResult().getParameters().get("#RechnungsnummerContext.number");
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
-                Object genehmigungsObject = request.getQueryResult().getParameters().get("genehmigung");
-                String genehmigung = genehmigungsObject != null ? genehmigungsObject.toString() : "";
                 JSONObject inputArguments = new JSONObject();
                 inputArguments.put("loc_RechnungsNr", rechnungsnummer);
-                inputArguments.put("loc_Genehmigt", genehmigung);
                 String releaseKey = client.getReleaseKeyByProcessKey("Odoo-Rechnungs-Genehmigung-Einzel");
                 msg = uiPathHandler.handleUiPathRequest(request, intent, msg, inputArguments, releaseKey);
             } catch (InterruptedException e) {
