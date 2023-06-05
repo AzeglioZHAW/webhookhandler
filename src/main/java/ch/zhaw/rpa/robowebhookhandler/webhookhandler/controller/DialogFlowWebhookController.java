@@ -82,6 +82,7 @@ public class DialogFlowWebhookController {
             try {
                 Object rechnungsnummerObject = request.getQueryResult().getOutputContexts().get(0).getOrDefault("number", ""); //.getParameters().get("#RechnungsnummerContext.number");
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
+                System.out.println("Test Johnny Rechnungsnummer:" + rechnungsnummer);
                 JSONObject inputArguments = new JSONObject();
                 inputArguments.put("loc_RechnungsNr", rechnungsnummer);
                 String releaseKey = client.getReleaseKeyByProcessKey("Odoo-Rechnungs-Genehmigung-Einzel");
