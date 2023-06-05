@@ -33,7 +33,7 @@ public class UiPathHandler {
                 Object rechnungsnummerObject = request.getQueryResult().getParameters().get("Rechnungsnummer");
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
 
-                System.out.println(rechnungsnummer);
+                System.out.println("UiPathHandler: Rechnungsnummer In: "+rechnungsnummer);
                 // Session Id auslesen
                 String sessionId = request.getSession();
 
