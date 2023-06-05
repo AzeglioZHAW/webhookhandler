@@ -80,7 +80,7 @@ public class DialogFlowWebhookController {
             }
         } else if(intent.equals("rechnungen.genehmigen - yes") || intent.equals("rechnungen.genehmigen - no")) {
             try {
-                Object rechnungsnummerObject = request.getQueryResult().getParameters().get("number");
+                Object rechnungsnummerObject = request.getQueryResult().getOutputContexts().get(0).getParameters().get("number");
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
                 Object genehmigungObject = request.getQueryResult().getParameters().get("genehmigung");
                 String genehmigung = genehmigungObject != null ? genehmigungObject.toString() : "";
