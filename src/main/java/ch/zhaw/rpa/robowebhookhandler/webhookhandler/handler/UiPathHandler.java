@@ -61,9 +61,12 @@ public class UiPathHandler {
                         // Etwas Zeit "schinden", aber so, dass DialogFlow noch nicht abbricht und
                         if (sessionState.getUiPathJobState().equals("created")) {
                                 // Text für Benutzer festlegen
-                                msg = getResponseOfTypePleaseWait(
+                                msg = setButtonCardResponse(
                                                 "Es kann eine Minute dauern, bis die Informationen von der Originalquelle abgerufen werden. Klicken Sie auf 'Weiter', sobald Sie sehen möchten, ob die Informationen bereits vorhanden sind.",
-                                                request, intent, msg);
+                                                "Bitte warten..",
+                                                "Weiter",
+                                                "Weiter",
+                                                msg);
                                 // Damit er der Text direkt zum User kommt, die unteren Zeilen sind erst später relevant
                                 return msg;
                         }
@@ -74,9 +77,12 @@ public class UiPathHandler {
                 if (sessionState.getUiPathJobState().equals("created")) {
                         // Etwas Zeit "schinten", aber so, dass Google Actions noch nicht abbricht und
                         // Text für Benutzer festlegen
-                        msg = getResponseOfTypePleaseWait(
+                        msg = setButtonCardResponse(
                                         "Ich erhalte immer noch die von Ihnen gewünschten Informationen. Klicken Sie auf 'Weiter', wenn Sie die Umfrage wiederholen möchten.",
-                                        request, intent, msg);
+                                        "Bitte warten..",
+                                        "Weiter",
+                                        "Weiter",
+                                        msg);
                 }
                 // Wenn der UiPath Job abgeschlossen wurde
                 else if (sessionState.getUiPathJobState().equals("successfull")) {
@@ -110,20 +116,14 @@ public class UiPathHandler {
                 return msg;
         }
 
-        private GoogleCloudDialogflowV2IntentMessage getResponseOfTypePleaseWait(String promptText,
-                        GoogleCloudDialogflowV2WebhookRequest request,
-                        String intent, GoogleCloudDialogflowV2IntentMessage msg) {
-                // Rich-Content-Payload in Form von verschachtelten HashMaps aufbereiten
-                // basierend auf
-                // https://cloud.google.com/dialogflow/es/docs/integrations/dialogflow-messenger?hl=en#rich
-
+        private GoogleCloudDialogflowV2IntentMessage setButtonCardResponse(String message, String title, String postback, String buttonText, GoogleCloudDialogflowV2IntentMessage msg) {
                 GoogleCloudDialogflowV2IntentMessageCard card = new GoogleCloudDialogflowV2IntentMessageCard();
                 GoogleCloudDialogflowV2IntentMessageCardButton cardButton = new GoogleCloudDialogflowV2IntentMessageCardButton();
-                cardButton.setText("Weiter");
-                cardButton.setPostback("Weiter");
+                cardButton.setText(buttonText);
+                cardButton.setPostback(postback);
                 card.setButtons(List.of(cardButton));
-                card.setTitle("Bitte warten...");
-                card.setSubtitle(promptText);
+                card.setTitle(title);
+                card.setSubtitle(message);
 
                 msg.setCard(card);
 
