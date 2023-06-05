@@ -84,7 +84,7 @@ public class DialogFlowWebhookController {
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
                 Object genehmigungObject = request.getQueryResult().getParameters().get("genehmigung");
                 String genehmigung = genehmigungObject != null ? genehmigungObject.toString() : "";
-                System.out.println("Test Johnny Rechnungsnummer:" + rechnungsnummer);
+                System.out.println("WebhookController Rechnungsnummer: " + rechnungsnummer);
                 JSONObject inputArguments = new JSONObject();
                 inputArguments.put("loc_RechnungsNr", rechnungsnummer);
                 inputArguments.put("loc_Genehmigt", genehmigung);
