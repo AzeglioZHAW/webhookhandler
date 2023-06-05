@@ -64,11 +64,12 @@ public class DialogFlowWebhookController {
 
         //ANPASSEN!!!!
         // Je nach Intent anderen Handler aufrufen oder Response zusammenbauen
-        if (intent.equals("rechnungsdetails.abrufen")|| intent.equals("ContinueGetRechnungsdetailsIntent") || intent.equals("rechnungen.genehmigen")) {
+        if (intent.equals("rechnungsdetails.abrufen")|| intent.equals("ContinueGetRechnungsdetailsIntent")) {
             // Antwort vom RPA-Bot erhalten
             try {
                 Object rechnungsnummerObject = request.getQueryResult().getParameters().get("Rechnungsnummer");
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
+                //hier wird die Rechnungsnummer and RPA-Bot übergeben, in_InvoiceNr
                 JSONObject inputArguments = new JSONObject();
                 inputArguments.put("in_InvoiceNr", rechnungsnummer);
                 String releaseKey = client.getReleaseKeyByProcessKey("DurchstichRPA");
@@ -77,7 +78,22 @@ public class DialogFlowWebhookController {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }  else {
+        } else if(intent.equals("rechnungen.genehmigen")) {
+            try {
+                Object rechnungsnummerObject = request.getQueryResult().getParameters().get("Rechnungsnummer");
+                String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
+                Object genehmigungsObject = request.getQueryResult().getParameters().get("genehmigung");
+                String genehmigung = genehmigungsObject != null ? genehmigungsObject.toString() : "";
+                JSONObject inputArguments = new JSONObject();
+                inputArguments.put("loc_RechnungsNr", rechnungsnummer);
+                inputArguments.put("loc_Genehmigt", genehmigung);
+                String releaseKey = client.getReleaseKeyByProcessKey("Odoo-Rechnungs-Genehmigung-Einzel");
+                msg = uiPathHandler.handleUiPathRequest(request, intent, msg, inputArguments, releaseKey);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
             // Response no handler found zusammenstellen
             GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
             text.setText(List.of("There's no handler for '" + intent + "'"));

@@ -29,13 +29,6 @@ public class UiPathHandler {
 
         public GoogleCloudDialogflowV2IntentMessage handleUiPathRequest(GoogleCloudDialogflowV2WebhookRequest request,
                         String intent, GoogleCloudDialogflowV2IntentMessage msg, JSONObject inputArguments, String releaseKey) throws InterruptedException {
-                // ANPASSEN!!!!
-                // Rechnungsnummer auslesen
-
-                //Object genehmiggtObject = request.getQueryResult().getParameters().get("genehmigung");
-                //String istGenehmigt = genehmiggtObject != null ? genehmiggtObject.toString() : "";
-                //System.out.println("GenehmigungHandler: Rechnungsnummer In: ");
-                //System.out.println("GenehmigungHandler: istGenehmigt In: "+istGenehmigt);
 
                 // Session Id auslesen
                 String sessionId = request.getSession();
@@ -100,14 +93,14 @@ public class UiPathHandler {
                                 msg.setText(text);
 
                         }
-                        /*else if(intent.equals("rechnungen.genehmigen")) {
+                        else if(intent.equals("rechnungen.genehmigen")) {
                                 String OutRechnungsDetails = sessionState.getOutputArguments()
-                                                .getString("");
+                                                .getString("out_InvoiceInformation");
                                 System.out.println(OutRechnungsDetails);
                                 GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-                                text.setText(List.of(""));
+                                text.setText(List.of(OutRechnungsDetails));
                                 msg.setText(text);
-                        }*/
+                        }
                         stateService.removeSessionState(sessionState);
                 }
                 // In allen anderen Fällen (UiPath Job nicht erstellt werden konnte oder
