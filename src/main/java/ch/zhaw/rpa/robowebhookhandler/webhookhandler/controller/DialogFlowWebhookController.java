@@ -83,14 +83,37 @@ public class DialogFlowWebhookController {
             try {
                 Object rechnungsnummerObject = request.getQueryResult().getOutputContexts().get(0).getParameters().get("number");
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
-                Object genehmigungObject = request.getQueryResult().getOutputContexts().get(0).getParameters().get("genehmigung");
-                String genehmigung = genehmigungObject != null ? genehmigungObject.toString() : "";
+                //Object genehmigungObject = request.getQueryResult().getOutputContexts().get(0).getParameters().get("genehmigung");
+                String genehmigung = intent.equals("rechnungen.genehmigen - yes")  ? "genehmigt" : "no" ;
+                
                 System.out.println("Webhhok Controller loc_RechnungsNr: " + rechnungsnummer);
                 System.out.println("Webhhok Controller loc_Genehmigt: " + genehmigung);
                 JSONObject inputArguments = new JSONObject();
                 inputArguments.put("loc_RechnungsNr", rechnungsnummer);
                 inputArguments.put("loc_Genehmigt", genehmigung);
                 String releaseKey = client.getReleaseKeyByProcessKey("Odoo-Rechnungs-Genehmigung-Einzel");
+                msg = uiPathHandler.handleUiPathRequest(request, intent, msg, inputArguments, releaseKey);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else if(intent.equals("rechnung.lieferantentotal.abrufen")) {
+            try {
+                Object lieferantObject = request.getQueryResult().getParameters().get("axa");
+                String lieferant = lieferantObject != null ? lieferantObject.toString() : "";
+                /*Object jahrObject = request.getQueryResult().getParameters().get("number");
+                String jahr = jahrObject != null ? jahrObject.toString() : "";
+                Object statusObject = request.getQueryResult().getOutputContexts().get(0).getParameters().get("number");
+                String status = statusObject != null ? statusObject.toString() : "";*/
+               
+                System.out.println("Webhhok Controller in_Lieferant: " + lieferant);
+                /*System.out.println("Webhhok Controller in_Jahr: " + jahr);
+                System.out.println("Webhhok Controller in_Status: " + status);*/
+                JSONObject inputArguments = new JSONObject();
+                inputArguments.put("in_Lieferant", lieferant);
+                /*inputArguments.put("in_Jahr", jahr);
+                inputArguments.put("in_Status", status);*/
+                String releaseKey = client.getReleaseKeyByProcessKey("Abfragen_Lieferant_Jahr_Status");
                 msg = uiPathHandler.handleUiPathRequest(request, intent, msg, inputArguments, releaseKey);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
