@@ -71,8 +71,9 @@ public class DialogFlowWebhookController {
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
                 //hier wird die Rechnungsnummer and RPA-Bot übergeben, in_InvoiceNr
                 JSONObject inputArguments = new JSONObject();
-                inputArguments.put("in_InvoiceNr", rechnungsnummer);
-                String releaseKey = client.getReleaseKeyByProcessKey("DurchstichRPA");
+                System.out.println("Webhhok Controller in_RGNummer: "+rechnungsnummer);
+                inputArguments.put("in_RGNummer", rechnungsnummer);
+                String releaseKey = client.getReleaseKeyByProcessKey("RechnungenAuslesen");
                 msg = uiPathHandler.handleUiPathRequest(request, intent, msg, inputArguments, releaseKey);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
