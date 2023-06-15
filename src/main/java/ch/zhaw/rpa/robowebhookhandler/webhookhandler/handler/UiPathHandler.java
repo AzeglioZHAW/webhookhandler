@@ -53,7 +53,7 @@ public class UiPathHandler {
                                 System.out.println("Der folgende Fehler ist aufgetreten: " + e.getLocalizedMessage()
                                                  + "Klicken Sie auf 'Weiter', wenn Sie es erneut versuchen möchten.");
                         }
-                        
+                        System.out.println("Test1: "+sessionState.getUiPathJobState());
                         // Etwas Zeit "schinden", aber so, dass DialogFlow noch nicht abbricht und
                         if (sessionState.getUiPathJobState().equals("created")) {
                                 // Text für Benutzer festlegen
@@ -63,11 +63,12 @@ public class UiPathHandler {
                                                 "Weiter",
                                                 "Weiter",
                                                 msg);
+                                System.out.println("Test2: "+sessionState.getUiPathJobState());
                                 // Damit er der Text direkt zum User kommt, die unteren Zeilen sind erst später relevant
                                 return msg;
                         }
                 }
-
+                System.out.println("Test3: "+sessionState.getUiPathJobState());
                 // Wenn ein zweiter, dritter, usw. Request vorhanden ist
                 // Wenn der UiPath Job noch am laufen ist
                 if (sessionState.getUiPathJobState().equals("created")) {
