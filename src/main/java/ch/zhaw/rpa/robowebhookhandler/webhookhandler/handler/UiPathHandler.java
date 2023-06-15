@@ -93,7 +93,7 @@ public class UiPathHandler {
                                 msg.setText(text);
 
                         }
-                        else if(intent.equals("rechnungen.genehmigen")) {
+                        else if(intent.equals("rechnungen.genehmigen")|| intent.equals("rechnungen.genehmigen - yes") || intent.equals("rechnungen.genehmigen - no")) {
                                 String OutRechnungsDetails = sessionState.getOutputArguments()
                                                 .getString("out_InvoiceInformation");
                                 System.out.println("UiPath Handler Out_InvoiceInformation: "+OutRechnungsDetails);
