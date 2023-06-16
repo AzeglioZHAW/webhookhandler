@@ -62,16 +62,16 @@ public class DialogFlowWebhookController {
         // Intent auslesen
         String intent = queryResult.getIntent().getDisplayName();
 
-        //ANPASSEN!!!!
+        // ANPASSEN!!!!
         // Je nach Intent anderen Handler aufrufen oder Response zusammenbauen
-        if (intent.equals("rechnungsdetails.abrufen")|| intent.equals("ContinueGetRechnungsdetailsIntent")) {
+        if (intent.equals("rechnungsdetails.abrufen") || intent.equals("ContinueGetRechnungsdetailsIntent")) {
             // Antwort vom RPA-Bot erhalten
             try {
                 Object rechnungsnummerObject = request.getQueryResult().getParameters().get("Rechnungsnummer");
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
-                //hier wird die Rechnungsnummer and RPA-Bot übergeben, in_InvoiceNr
+                // hier wird die Rechnungsnummer and RPA-Bot übergeben, in_InvoiceNr
                 JSONObject inputArguments = new JSONObject();
-                System.out.println("Webhhok Controller in_RGNummer: "+rechnungsnummer);
+                System.out.println("Webhhok Controller in_RGNummer: " + rechnungsnummer);
                 inputArguments.put("in_RGNummer", rechnungsnummer);
                 String releaseKey = client.getReleaseKeyByProcessKey("RechnungenAuslesen");
                 msg = uiPathHandler.handleUiPathRequest(request, intent, msg, inputArguments, releaseKey);
@@ -79,13 +79,13 @@ public class DialogFlowWebhookController {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        } else if(intent.equals("rechnungen.genehmigen - yes") || intent.equals("rechnungen.genehmigen - no")) {
+        } else if (intent.equals("rechnungen.genehmigen - yes") || intent.equals("rechnungen.genehmigen - no")) {
             try {
-                Object rechnungsnummerObject = request.getQueryResult().getOutputContexts().get(0).getParameters().get("number");
+                Object rechnungsnummerObject = request.getQueryResult().getOutputContexts().get(0).getParameters()
+                        .get("number");
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
-                //Object genehmigungObject = request.getQueryResult().getOutputContexts().get(0).getParameters().get("genehmigung");
-                String genehmigung = intent.equals("rechnungen.genehmigen - yes")  ? "genehmigt" : "no" ;
-                
+                String genehmigung = intent.equals("rechnungen.genehmigen - yes") ? "genehmigt" : "no";
+
                 System.out.println("Webhhok Controller loc_RechnungsNr: " + rechnungsnummer);
                 System.out.println("Webhhok Controller loc_Genehmigt: " + genehmigung);
                 JSONObject inputArguments = new JSONObject();
@@ -97,22 +97,30 @@ public class DialogFlowWebhookController {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        } else if(intent.equals("rechnung.lieferantentotal.abrufen")) {
+        } else if (intent.equals("rechnung.lieferantentotal.abrufen")) {
             try {
-                Object lieferantObject = request.getQueryResult().getParameters().get("axa");
+                Object lieferantObject = request.getQueryResult().getParameters().get("LieferantTotal");
                 String lieferant = lieferantObject != null ? lieferantObject.toString() : "";
-                /*Object jahrObject = request.getQueryResult().getParameters().get("number");
-                String jahr = jahrObject != null ? jahrObject.toString() : "";
-                Object statusObject = request.getQueryResult().getOutputContexts().get(0).getParameters().get("number");
-                String status = statusObject != null ? statusObject.toString() : "";*/
-               
+                /*
+                 * Object jahrObject = request.getQueryResult().getParameters().get("number");
+                 * String jahr = jahrObject != null ? jahrObject.toString() : "";
+                 * Object statusObject =
+                 * request.getQueryResult().getOutputContexts().get(0).getParameters().get(
+                 * "number");
+                 * String status = statusObject != null ? statusObject.toString() : "";
+                 */
+
                 System.out.println("Webhhok Controller in_Lieferant: " + lieferant);
-                /*System.out.println("Webhhok Controller in_Jahr: " + jahr);
-                System.out.println("Webhhok Controller in_Status: " + status);*/
+                /*
+                 * System.out.println("Webhhok Controller in_Jahr: " + jahr);
+                 * System.out.println("Webhhok Controller in_Status: " + status);
+                 */
                 JSONObject inputArguments = new JSONObject();
                 inputArguments.put("in_Lieferant", lieferant);
-                /*inputArguments.put("in_Jahr", jahr);
-                inputArguments.put("in_Status", status);*/
+                /*
+                 * inputArguments.put("in_Jahr", jahr);
+                 * inputArguments.put("in_Status", status);
+                 */
                 String releaseKey = client.getReleaseKeyByProcessKey("Abfragen_Lieferant_Jahr_Status");
                 msg = uiPathHandler.handleUiPathRequest(request, intent, msg, inputArguments, releaseKey);
             } catch (InterruptedException e) {

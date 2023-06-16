@@ -28,14 +28,15 @@ public class UiPathHandler {
         private DialogFlowSessionStateService stateService;
 
         public GoogleCloudDialogflowV2IntentMessage handleUiPathRequest(GoogleCloudDialogflowV2WebhookRequest request,
-                        String intent, GoogleCloudDialogflowV2IntentMessage msg, JSONObject inputArguments, String releaseKey) throws InterruptedException {
+                        String intent, GoogleCloudDialogflowV2IntentMessage msg, JSONObject inputArguments,
+                        String releaseKey) throws InterruptedException {
 
                 // Session Id auslesen
                 String sessionId = request.getSession();
 
                 // Prüfen, ob Session Id bereits verwaltet ist
                 DialogFlowSessionState sessionState = stateService.getSessionStateBySessionId(sessionId);
-                
+
                 // Wenn die Session Id noch nicht verwaltet ist (erster Request)
                 if (sessionState == null) {
                         // Neuen Session State erstellen
@@ -51,9 +52,9 @@ public class UiPathHandler {
                                 Thread.sleep(3000);
                         } catch (InterruptedException e) {
                                 System.out.println("Der folgende Fehler ist aufgetreten: " + e.getLocalizedMessage()
-                                                 + "Klicken Sie auf 'Weiter', wenn Sie es erneut versuchen möchten.");
+                                                + "Klicken Sie auf 'Weiter', wenn Sie es erneut versuchen möchten.");
                         }
-                        System.out.println("Test1: "+sessionState.getUiPathJobState());
+                        System.out.println("Test1: " + sessionState.getUiPathJobState());
                         // Etwas Zeit "schinden", aber so, dass DialogFlow noch nicht abbricht und
                         if (sessionState.getUiPathJobState().equals("created")) {
                                 // Text für Benutzer festlegen
@@ -63,12 +64,13 @@ public class UiPathHandler {
                                                 "Weiter",
                                                 "Weiter",
                                                 msg);
-                                System.out.println("Test2: "+sessionState.getUiPathJobState());
-                                // Damit er der Text direkt zum User kommt, die unteren Zeilen sind erst später relevant
+                                System.out.println("Test2: " + sessionState.getUiPathJobState());
+                                // Damit er der Text direkt zum User kommt, die unteren Zeilen sind erst später
+                                // relevant
                                 return msg;
                         }
                 }
-                System.out.println("Test3: "+sessionState.getUiPathJobState());
+                System.out.println("Test3: " + sessionState.getUiPathJobState());
                 // Wenn ein zweiter, dritter, usw. Request vorhanden ist
                 // Wenn der UiPath Job noch am laufen ist
                 if (sessionState.getUiPathJobState().equals("created")) {
@@ -84,24 +86,33 @@ public class UiPathHandler {
                 // Wenn der UiPath Job abgeschlossen wurde
                 else if (sessionState.getUiPathJobState().equals("successfull")) {
                         // Wenn die Rechnungsdetails angefragt wurden
-                        /*if (intent.equals("rechnungsdetails.abrufen")
-                                        || intent.equals("ContinueGetRechnungsdetailsIntent")) {*/
-                                String OutRechnungsDetails = sessionState.getOutputArguments()
-                                                .getString("out_InvoiceInformation");
-                                System.out.println("UiPath Handler Out_InvoiceInformation: "+OutRechnungsDetails);
-                                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-                                text.setText(List.of(OutRechnungsDetails));
-                                msg.setText(text);
+                        /*
+                         * if (intent.equals("rechnungsdetails.abrufen")
+                         * || intent.equals("ContinueGetRechnungsdetailsIntent")) {
+                         */
+                        String OutRechnungsDetails = sessionState.getOutputArguments()
+                                        .getString("out_InvoiceInformation");
+                        System.out.println("UiPath Handler Out_InvoiceInformation: " + OutRechnungsDetails);
+                        GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+                        text.setText(List.of(OutRechnungsDetails));
+                        msg.setText(text);
 
-                        //}
-                        /*else if(intent.equals("rechnungen.genehmigen")|| intent.equals("rechnungen.genehmigen - yes") || intent.equals("rechnungen.genehmigen - no")|| intent.equals("ContinueGetRechnungsdetailsIntent")) {
-                                String OutRechnungsDetails = sessionState.getOutputArguments()
-                                                .getString("out_InvoiceInformation");
-                                System.out.println("UiPath Handler Out_InvoiceInformation: "+OutRechnungsDetails);
-                                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-                                text.setText(List.of(OutRechnungsDetails));
-                                msg.setText(text);
-                        }*/
+                        // }
+                        /*
+                         * else if(intent.equals("rechnungen.genehmigen")||
+                         * intent.equals("rechnungen.genehmigen - yes") ||
+                         * intent.equals("rechnungen.genehmigen - no")||
+                         * intent.equals("ContinueGetRechnungsdetailsIntent")) {
+                         * String OutRechnungsDetails = sessionState.getOutputArguments()
+                         * .getString("out_InvoiceInformation");
+                         * System.out.println("UiPath Handler Out_InvoiceInformation: "
+                         * +OutRechnungsDetails);
+                         * GoogleCloudDialogflowV2IntentMessageText text = new
+                         * GoogleCloudDialogflowV2IntentMessageText();
+                         * text.setText(List.of(OutRechnungsDetails));
+                         * msg.setText(text);
+                         * }
+                         */
                         stateService.removeSessionState(sessionState);
                 }
                 // In allen anderen Fällen (UiPath Job nicht erstellt werden konnte oder
@@ -121,7 +132,8 @@ public class UiPathHandler {
                 return msg;
         }
 
-        private GoogleCloudDialogflowV2IntentMessage setButtonCardResponse(String message, String title, String postback, String buttonText, GoogleCloudDialogflowV2IntentMessage msg) {
+        private GoogleCloudDialogflowV2IntentMessage setButtonCardResponse(String message, String title,
+                        String postback, String buttonText, GoogleCloudDialogflowV2IntentMessage msg) {
                 GoogleCloudDialogflowV2IntentMessageCard card = new GoogleCloudDialogflowV2IntentMessageCard();
                 GoogleCloudDialogflowV2IntentMessageCardButton cardButton = new GoogleCloudDialogflowV2IntentMessageCardButton();
                 cardButton.setText(buttonText);
