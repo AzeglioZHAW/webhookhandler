@@ -85,11 +85,6 @@ public class UiPathHandler {
                 }
                 // Wenn der UiPath Job abgeschlossen wurde
                 else if (sessionState.getUiPathJobState().equals("successfull")) {
-                        // Wenn die Rechnungsdetails angefragt wurden
-                        /*
-                         * if (intent.equals("rechnungsdetails.abrufen")
-                         * || intent.equals("ContinueGetRechnungsdetailsIntent")) {
-                         */
                         String OutRechnungsDetails = sessionState.getOutputArguments()
                                         .getString("out_InvoiceInformation");
                         System.out.println("UiPath Handler Out_InvoiceInformation: " + OutRechnungsDetails);
@@ -97,22 +92,6 @@ public class UiPathHandler {
                         text.setText(List.of(OutRechnungsDetails));
                         msg.setText(text);
 
-                        // }
-                        /*
-                         * else if(intent.equals("rechnungen.genehmigen")||
-                         * intent.equals("rechnungen.genehmigen - yes") ||
-                         * intent.equals("rechnungen.genehmigen - no")||
-                         * intent.equals("ContinueGetRechnungsdetailsIntent")) {
-                         * String OutRechnungsDetails = sessionState.getOutputArguments()
-                         * .getString("out_InvoiceInformation");
-                         * System.out.println("UiPath Handler Out_InvoiceInformation: "
-                         * +OutRechnungsDetails);
-                         * GoogleCloudDialogflowV2IntentMessageText text = new
-                         * GoogleCloudDialogflowV2IntentMessageText();
-                         * text.setText(List.of(OutRechnungsDetails));
-                         * msg.setText(text);
-                         * }
-                         */
                         stateService.removeSessionState(sessionState);
                 }
                 // In allen anderen Fällen (UiPath Job nicht erstellt werden konnte oder
