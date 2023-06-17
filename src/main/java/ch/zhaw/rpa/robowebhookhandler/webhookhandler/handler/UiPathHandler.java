@@ -54,7 +54,7 @@ public class UiPathHandler {
                                 System.out.println("Der folgende Fehler ist aufgetreten: " + e.getLocalizedMessage()
                                                 + "Klicken Sie auf 'Weiter', wenn Sie es erneut versuchen möchten.");
                         }
-                        System.out.println("Test1: " + sessionState.getUiPathJobState());
+                        System.out.println("State 1 Output: " + sessionState.getUiPathJobState());
                         // Etwas Zeit "schinden", aber so, dass DialogFlow noch nicht abbricht und
                         if (sessionState.getUiPathJobState().equals("created")) {
                                 // Text für Benutzer festlegen
@@ -64,13 +64,13 @@ public class UiPathHandler {
                                                 "Weiter",
                                                 "Weiter",
                                                 msg);
-                                System.out.println("Test2: " + sessionState.getUiPathJobState());
+                                System.out.println("State 2 Output: " + sessionState.getUiPathJobState());
                                 // Damit er der Text direkt zum User kommt, die unteren Zeilen sind erst später
                                 // relevant
                                 return msg;
                         }
                 }
-                System.out.println("Test3: " + sessionState.getUiPathJobState());
+                System.out.println("State 3 Output: " + sessionState.getUiPathJobState());
                 // Wenn ein zweiter, dritter, usw. Request vorhanden ist
                 // Wenn der UiPath Job noch am laufen ist
                 if (sessionState.getUiPathJobState().equals("created")) {
@@ -91,7 +91,6 @@ public class UiPathHandler {
                         GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
                         text.setText(List.of(OutRechnungsDetails));
                         msg.setText(text);
-
                         stateService.removeSessionState(sessionState);
                 }
                 // In allen anderen Fällen (UiPath Job nicht erstellt werden konnte oder
@@ -105,9 +104,7 @@ public class UiPathHandler {
                         msg.setText(text);
                         stateService.removeSessionState(sessionState);
                 }
-
                 System.out.println("UiPathHandler msg: " + msg);
-
                 return msg;
         }
 
@@ -120,9 +117,7 @@ public class UiPathHandler {
                 card.setButtons(List.of(cardButton));
                 card.setTitle(title);
                 card.setSubtitle(message);
-
                 msg.setCard(card);
-
                 return msg;
         }
 }

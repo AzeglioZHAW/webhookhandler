@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class UiPathOrchestratorRestClient {
-        
+
     private RestTemplate restTemplate;
 
     @Autowired
@@ -46,8 +46,8 @@ public class UiPathOrchestratorRestClient {
     @PostConstruct
     public void postConstruct() {
         this.restTemplate = this.builder
-            .rootUri(rootUri)
-            .build();
+                .rootUri(rootUri)
+                .build();
 
         httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -66,7 +66,7 @@ public class UiPathOrchestratorRestClient {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
             JSONObject responseBody = new JSONObject(response.getBody());
             Integer resultCount = responseBody.getInt("@odata.count");
-            if(resultCount != 1) {
+            if (resultCount != 1) {
                 return "";
             } else {
                 String releaseKey = responseBody.getJSONArray("value").getJSONObject(0).getString("Key");
@@ -76,7 +76,7 @@ public class UiPathOrchestratorRestClient {
             e.printStackTrace();
             return "";
         }
-        
+
     }
 
     public Integer startJobAndGetId(String releaseKey, JSONObject inputArguments) {
@@ -95,12 +95,11 @@ public class UiPathOrchestratorRestClient {
         // Generate Body
         JSONObject body = new JSONObject();
         body.put("startInfo", startInfo);
-        
 
         RequestEntity<String> requestEntity = RequestEntity
-            .post(uri)
-            .headers(httpHeaders)
-            .body(body.toString());
+                .post(uri)
+                .headers(httpHeaders)
+                .body(body.toString());
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(requestEntity, String.class);
@@ -117,7 +116,7 @@ public class UiPathOrchestratorRestClient {
 
     public JSONObject getJobById(Integer id, Integer pollingCycleInMilliseconds, Integer pollingMaxRetries) {
         this.authenticate();
-        
+
         String uri = "/odata/Jobs(" + id + ")";
 
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
@@ -138,7 +137,7 @@ public class UiPathOrchestratorRestClient {
                 response = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
                 JSONObject responseBody = new JSONObject(response.getBody());
                 jobState = responseBody.getString("State");
-                if(jobState.equals("Successful")) {
+                if (jobState.equals("Successful")) {
                     JSONObject outputArguments = new JSONObject(responseBody.getString("OutputArguments"));
                     return outputArguments;
                 }
@@ -146,13 +145,14 @@ public class UiPathOrchestratorRestClient {
                 e.printStackTrace();
                 return null;
             }
-            
-        } while (!jobState.equals("Successful") ||  pollingCounter <= pollingMaxRetries);
+        } while (!jobState.equals("Successful") || pollingCounter <= pollingMaxRetries);
 
-        return null;        
+        return null;
     }
 
-    // Eigentlich müsste man dies nur alle 24 h machen, respektive anders über Refresh Token, aber zur Sicherheit, wird diese Methode halt bei jedem Request zunächst aufgerufen
+    // Eigentlich müsste man dies nur alle 24 h machen, respektive anders über
+    // Refresh Token, aber zur Sicherheit, wird diese Methode halt bei jedem Request
+    // zunächst aufgerufen
     private void authenticate() {
         // Generate Body
         JSONObject body = new JSONObject();
@@ -161,22 +161,20 @@ public class UiPathOrchestratorRestClient {
         body.put("refresh_token", userKey);
 
         RequestEntity<String> requestEntity = RequestEntity
-            .post(authUri)
-            .headers(httpHeaders)
-            .body(body.toString());
-
+                .post(authUri)
+                .headers(httpHeaders)
+                .body(body.toString());
         try {
             ResponseEntity<String> response = restTemplate.exchange(requestEntity, String.class);
 
             JSONObject responseBody = new JSONObject(response.getBody());
             String accessToken = responseBody.getString("access_token");
-
             httpHeaders.setBearerAuth(accessToken);
             System.out.println("!!!!!!!!! UiPath REST Authentication successful");
         } catch (Exception e) {
             System.out.println("!!!!!!!!! UiPath REST Authentication failed");
             e.printStackTrace();
         }
-        
+
     }
 }

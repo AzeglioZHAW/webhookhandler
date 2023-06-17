@@ -16,7 +16,7 @@ public class UiPathAsyncJobHandler {
     @Async
     public void asyncRunUiPathRoboConnector(DialogFlowSessionState sessionState, JSONObject inputArguments,
             String releaseKey) {
-        System.out.println("!!!!!!!!! Release Key angefordert von UiPath");
+        //System.out.println("!!!!!!!!! Release Key angefordert von UiPath");
 
         System.out.println("!!!!!!!!! Auftrag für Job starten erteilt");
         Integer id = client.startJobAndGetId(releaseKey, inputArguments);

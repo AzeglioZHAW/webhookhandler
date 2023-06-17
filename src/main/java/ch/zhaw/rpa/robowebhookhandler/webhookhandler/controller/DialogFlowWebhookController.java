@@ -62,8 +62,7 @@ public class DialogFlowWebhookController {
         // Intent auslesen
         String intent = queryResult.getIntent().getDisplayName();
 
-        // ANPASSEN!!!!
-        // Je nach Intent anderen Handler aufrufen oder Response zusammenbauen
+        // Je nach Intent andere Response zusammenbauen
         if (intent.equals("rechnungsdetails.abrufen") || intent.equals("ContinueGetRechnungsdetailsIntent")) {
             // Antwort vom RPA-Bot erhalten
             try {
@@ -85,7 +84,6 @@ public class DialogFlowWebhookController {
                         .get("number");
                 String rechnungsnummer = rechnungsnummerObject != null ? rechnungsnummerObject.toString() : "";
                 String genehmigung = intent.equals("rechnungen.genehmigen - yes") ? "genehmigt" : "no";
-
                 System.out.println("Webhhok Controller loc_RechnungsNr: " + rechnungsnummer);
                 System.out.println("Webhhok Controller loc_Genehmigt: " + genehmigung);
                 JSONObject inputArguments = new JSONObject();
