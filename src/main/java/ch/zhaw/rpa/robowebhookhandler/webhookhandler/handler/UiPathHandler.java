@@ -87,7 +87,7 @@ public class UiPathHandler {
                 else if (sessionState.getUiPathJobState().equals("successfull")) {
                         String OutRechnungsDetails = sessionState.getOutputArguments()
                                         .getString("out_InvoiceInformation");
-                        System.out.println("UiPath Handler Out_InvoiceInformation: " + OutRechnungsDetails);
+                        System.out.println("UiPath Handler out_InvoiceInformation: " + OutRechnungsDetails);
                         GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
                         text.setText(List.of(OutRechnungsDetails));
                         msg.setText(text);
